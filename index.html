@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/spectre.css@0.5.9/dist/spectre.min.css">
+    <link rel="shortcut icon" href="https://cdn.jsdelivr.net/gh/a224327780/oneadmin@0.1/static/favicon.png">
+    <title>OneDrive图床</title>
+    <style type="text/css">
+        body {
+            background: #f6f8fa url(/static/bg.png) top;
+            color: #3f4347;
+        }
+
+        .header {
+            background: #fff;
+            height: 50px;
+            line-height: 50px;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+        }
+
+        .header a {
+            color: #3f4347
+        }
+
+        .container {
+            width: 1140px;
+        }
+
+        .upload-box {
+            display: block;
+            border: 1px dashed #aaa;
+            padding: 40px 10px;
+            text-align: center;
+            cursor: pointer;
+        }
+
+        .upload-box img {
+            width: 32px;
+            height: 32px;
+        }
+
+        .progress {
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            background: #eef0f3;
+            border: 0;
+            border-radius: .1rem;
+            color: #5755d9;
+            height: .2rem;
+            position: relative;
+            width: 100%;
+            margin-bottom: 1rem;
+        }
+
+        .progress::-webkit-progress-bar {
+            background: transparent;
+            border-radius: .1rem;
+        }
+
+        .progress::-webkit-progress-value {
+            background: #00acac;
+            border-radius: .1rem;
+        }
+
+        .progress::-moz-progress-bar {
+            background: #00acac;
+            border-radius: .1rem;
+        }
+
+        .progress:indeterminate {
+            animation: progress-indeterminate 1.5s linear infinite;
+            background: #eef0f3 linear-gradient(to right, #00acac 30%, #eef0f3 30%) top left/150% 150% no-repeat;
+        }
+
+        .progress:indeterminate::-moz-progress-bar {
+            background: transparent;
+        }
+
+        @keyframes progress-indeterminate {
+            0% {
+                background-position: 200% 0;
+            }
+            100% {
+                background-position: -200% 0;
+            }
+        }
+    </style>
+</head>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/jquery@1.11.0/dist/jquery.min.js"></script>
+<body>
+<header class="navbar header">
+    <div class="container">
+        <section class="navbar-section">
+            <a href="/" class="navbar-brand">OneDrive图床</a>
+        </section>
+    </div>
+</header>
+<div class="container">
+    <div class="main" style="margin: 0 auto;padding: 100px 0 30px 0;">
+        <input type="file" id="file" class="d-none">
+        <div class="upload-box" style="margin-bottom: 1rem;">
+            <img src="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iaXNvLTg4NTktMSI/Pg0KPCEtLSBHZW5lcmF0b3I6IEFkb2JlIElsbHVzdHJhdG9yIDE5LjAuMCwgU1ZHIEV4cG9ydCBQbHVnLUluIC4gU1ZHIFZlcnNpb246IDYuMDAgQnVpbGQgMCkgIC0tPg0KPHN2ZyB2ZXJzaW9uPSIxLjEiIGlkPSJDYXBhXzEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiIHg9IjBweCIgeT0iMHB4Ig0KCSB2aWV3Qm94PSIwIDAgNDg5LjQgNDg5LjQiIHN0eWxlPSJlbmFibGUtYmFja2dyb3VuZDpuZXcgMCAwIDQ4OS40IDQ4OS40OyIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSI+DQo8Zz4NCgk8Zz4NCgkJPHBhdGggZD0iTTM4Mi40LDQyMi43NWgtNzkuMUgyODJoLTQuNnYtMTA2LjFoMzQuN2M4LjgsMCwxNC0xMCw4LjgtMTcuMmwtNjcuNS05My40Yy00LjMtNi0xMy4yLTYtMTcuNSwwbC02Ny41LDkzLjQNCgkJCWMtNS4yLDcuMi0wLjEsMTcuMiw4LjgsMTcuMmgzNC43djEwNi4xaC00LjZIMTg2SDk0LjNjLTUyLjUtMi45LTk0LjMtNTItOTQuMy0xMDUuMmMwLTM2LjcsMTkuOS02OC43LDQ5LjQtODYNCgkJCWMtMi43LTcuMy00LjEtMTUuMS00LjEtMjMuM2MwLTM3LjUsMzAuMy02Ny44LDY3LjgtNjcuOGM4LjEsMCwxNS45LDEuNCwyMy4yLDQuMWMyMS43LTQ2LDY4LjUtNzcuOSwxMjIuOS03Ny45DQoJCQljNzAuNCwwLjEsMTI4LjQsNTQsMTM1LDEyMi43YzU0LjEsOS4zLDk1LjIsNTkuNCw5NS4yLDExNi4xQzQ4OS40LDM2Ni4wNSw0NDIuMiw0MTguNTUsMzgyLjQsNDIyLjc1eiIvPg0KCTwvZz4NCjwvZz4NCjxnPg0KPC9nPg0KPGc+DQo8L2c+DQo8Zz4NCjwvZz4NCjxnPg0KPC9nPg0KPGc+DQo8L2c+DQo8Zz4NCjwvZz4NCjxnPg0KPC9nPg0KPGc+DQo8L2c+DQo8Zz4NCjwvZz4NCjxnPg0KPC9nPg0KPGc+DQo8L2c+DQo8Zz4NCjwvZz4NCjxnPg0KPC9nPg0KPGc+DQo8L2c+DQo8Zz4NCjwvZz4NCjwvc3ZnPg0K"/>
+            <p>点击选择图片或直接粘贴文件</p>
+        </div>
+        <progress class="progress d-none" value="0" max="100"></progress>
+        <div class="upload-result columns d-none" style="padding-top: 2rem;">
+            <div class="column col-4">
+                <img src="" class="upload-img img-responsive">
+            </div>
+            <div class="column col-8">
+                <div class="form-group">
+                    <label class="form-label">URL</label>
+                    <input class="form-input" type="text" id="upload-url">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">HTML</label>
+                    <input class="form-input" type="text" id="upload-html">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">BBCode</label>
+                    <input class="form-input" type="text" id="upload-bbcode">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Markdown</label>
+                    <input class="form-input" type="text" id="upload-markdown">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    function preview(file) {
+        let reader = new FileReader()
+        reader.onload = function (event) {
+            $('.upload-img').attr('src', event.target.result)
+        }
+        reader.readAsDataURL(file);
+    }
+
+    function upload(file) {
+        let formData = new FormData();
+        formData.append('file', file);
+
+        let xhr = new XMLHttpRequest();
+        xhr.open("POST", '/upload');
+        let progress = $('.progress');
+        progress.removeClass('d-none')
+        xhr.upload.addEventListener('progress', function (e) {
+            let percent = (e.loaded / e.total) * 100;
+            // console.log(e.loaded + '/' + e.total)
+            progress.attr('value', percent)
+        }, false);
+        xhr.addEventListener('load', function (e) {
+            progress.addClass('d-none');
+            console.log(e.target.status)
+            let obj = JSON.parse(e.target.responseText);
+            let url = '{{!request.url}}' + obj.name;
+            $('.upload-result').removeClass('d-none')
+            $('.upload-img').attr('src', obj['@microsoft.graph.downloadUrl'])
+            $('#upload-url').val(url);
+            $('#upload-html').val('<img src="' + url + '"/>');
+            $('#upload-bbcode').val('[img]' + url + '[/img]');
+            $('#upload-markdown').val('![](' + url + ')');
+        }, false);
+        xhr.send(formData);
+    }
+
+    $(function () {
+        document.addEventListener('paste', function (event) {
+            let items = event.clipboardData && event.clipboardData.items;
+            if (items && items.length) {
+                for (let i = 0; i < items.length; i++) {
+                    if (items[i].type.indexOf('image') !== -1) {
+                        let file = items[i].getAsFile();
+                        console.log(file)
+                        upload(file)
+                        break
+                    }
+                }
+            }
+        });
+
+        $(document).on('click', '.upload-box', function () {
+            let $file = $('#file');
+            $file.click();
+        });
+
+        $(document).on('change', '#file', function () {
+            if (this.files.length <= 0) {
+                return false;
+            }
+            let file = this.files[0];
+            console.log(file)
+
+            if (file.size > 1024 * 1024 * 4) {
+                alert('文件不能超过4M')
+                return false;
+            }
+            upload(file)
+        });
+    })
+</script>
+</body>
+</html>
