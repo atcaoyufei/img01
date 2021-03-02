@@ -43,7 +43,7 @@ def index():
 
 
 @app.route('/upload', method='POST')
-def index():
+def upload_action():
     upload = request.files.get('file')
     ext = upload.raw_filename.split('.')[-1]
     name = f'{str(time.time()).replace(".", "")}.{ext}'
