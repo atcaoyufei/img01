@@ -1,2 +1,4 @@
 bottle
+pymongo
+pymongo[srv]
 requests
