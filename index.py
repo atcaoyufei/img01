@@ -4,7 +4,7 @@ import os
 import time
 from datetime import datetime, timedelta, timezone
 
-from bottle import default_app, template, static_file, request, abort
+from bottle import default_app, template, static_file, request, abort, redirect
 from pymongo import MongoClient
 
 from onedrive import OneDrive
@@ -62,6 +62,12 @@ def send_static(filename):
 @app.route('/', method='GET')
 def index():
     return template('index.html', request=request)
+
+
+@app.route('/<filename:path>')
+def get_file(filename):
+    data = one_drive.get_file(filename, site_id=drive_data['site_id'])
+    redirect(data['@microsoft.graph.downloadUrl'], 301)
 
 
 @app.route('/upload', method='POST')
